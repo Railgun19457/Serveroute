@@ -15,4 +15,12 @@ class TransferAddressesTest {
         assertEquals("jp.example.com", address.getHostString());
         assertEquals(25565, address.getPort());
     }
+
+    @Test
+    void explicitPortSkipsSrvLookup() {
+        InetSocketAddress address = TransferAddresses.forTransfer("example.invalid", 27193);
+        assertTrue(address.isUnresolved());
+        assertEquals("example.invalid", address.getHostString());
+        assertEquals(27193, address.getPort());
+    }
 }

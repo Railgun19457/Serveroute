@@ -83,10 +83,7 @@ public record RuntimeConfig(
                 continue;
             }
             if (startsWith(entry.id(), normalizedPrefix) || startsWith(entry.display(), normalizedPrefix)) {
-                suggestions.add(entry.id());
-                if (!entry.display().equals(entry.id())) {
-                    suggestions.add(entry.display());
-                }
+                suggestions.add(entry.display());
             }
         }
         return new ArrayList<>(suggestions);
@@ -100,10 +97,7 @@ public record RuntimeConfig(
                 continue;
             }
             if (startsWith(entry.id(), normalizedPrefix) || startsWith(entry.display(), normalizedPrefix)) {
-                suggestions.add(entry.id());
-                if (!entry.display().equals(entry.id())) {
-                    suggestions.add(entry.display());
-                }
+                suggestions.add(entry.display());
             }
         }
         return new ArrayList<>(suggestions);

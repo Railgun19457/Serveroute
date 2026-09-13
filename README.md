@@ -14,6 +14,7 @@ Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接�
 - 命令参数同时接受配置 `id` 与展示名 `display`
 - 按入站域名识别当前线路，并可把首次连接分流到对应内部服
 - Transfer 目标按配置域名发出，不在代理侧解析成 IP
+- 配置端口为 `25565` 时查询 `_minecraft._tcp` SRV，避免漏掉非默认端口
 - MiniMessage 文案，独立 `message.toml`
 - `/serveroute reload` 热重载；配置损坏时保留内存中的旧配置
 
@@ -42,7 +43,7 @@ accepts-transfers = true
 ## 命令
 
 - `/server` 列出可加入的逻辑服，并标记当前内部服
-- `/server <id|display>` 加入指定逻辑服
+- `/server <id|display>` 加入指定逻辑服（补全只出展示名）
 - `/line` 列出可切换的线路，并标记当前线路
 - `/线路` `/node` `/line` 的别名
 - `/line <id|display>` 切换到指定线路
@@ -79,6 +80,10 @@ accepts-transfers = true
 
 - 玩家不能输入裸 `host:port`，Transfer 目标只能来自配置白名单
 - Transfer 需要 Minecraft 1.20.5 或更高版本
+- 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
+  - Velocity：`[advanced] accepts-transfers = true`
+  - Paper / 原版：`server.properties` 里 `accepts-transfers=true`
+- 配置端口为 `25565` 时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
 - 识别线路依赖连接时的域名，不依赖玩家 IP
 - v1 不做测速、GUI、跨代理 Redis 同步
 
@@ -91,3 +96,7 @@ accepts-transfers = true
 构建产物位于：
 
 - `build/libs/Serveroute-<version>.jar`
+
+## License
+
+MIT License. See [LICENSE](LICENSE).

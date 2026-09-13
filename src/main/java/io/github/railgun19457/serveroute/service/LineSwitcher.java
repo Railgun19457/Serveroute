@@ -90,12 +90,12 @@ public final class LineSwitcher {
         ));
 
         String emitHost = entry.emitHost();
-        InetSocketAddress address = TransferAddresses.unresolved(emitHost, entry.port());
+        InetSocketAddress address = TransferAddresses.forTransfer(emitHost, entry.port());
         player.sendMessage(messages.renderPrefixed(templates.lineSwitching(), Map.of(
                 "display", MessageService.escape(entry.display())
         )));
         logger.info("[Serveroute][line] Transfer. uuid={} id={} host={}:{}",
-                player.getUniqueId(), entry.id(), emitHost, entry.port());
+                player.getUniqueId(), entry.id(), address.getHostString(), address.getPort());
         player.transferToHost(address);
     }
 

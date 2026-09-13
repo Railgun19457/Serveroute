@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuntimeConfigTest {
@@ -24,7 +25,9 @@ class RuntimeConfigTest {
         assertEquals("jp", runtime.findLine("日本").orElseThrow().id());
         assertEquals("jp", runtime.findLineByHost("JP.example.com:25565").orElseThrow().id());
         assertTrue(runtime.suggestServers("大", entry -> true).contains("大厅"));
-        assertTrue(runtime.suggestLines("jp", entry -> true).contains("jp"));
+        assertTrue(runtime.suggestLines("jp", entry -> true).contains("日本"));
+        assertTrue(runtime.suggestServers("lob", entry -> true).contains("大厅"));
+        assertFalse(runtime.suggestServers("lob", entry -> true).contains("lobby"));
     }
 
     @Test
