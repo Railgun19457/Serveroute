@@ -1,0 +1,68 @@
+# Serveroute 主配置。玩家只能选择这里出现的名字，不能填写任意地址。
+
+[meta]
+# 配置版本占位，后续升级时可用于迁移。
+config-version = 1
+
+[command]
+# 是否注销并接管 Velocity 原版 /server。调试时可设为 false，此时只注册 /line 与 /serveroute。
+replace-server = true
+# /line 的额外别名。
+line-aliases = ["线路", "node"]
+
+[transfer]
+# Minecraft 1.20.5 协议号。低于此版本的客户端不能 Transfer。
+min-protocol = 766
+# 切线路后等待重连送回原子服的超时（秒）。超时丢弃记录，走正常初始服逻辑。
+reconnect-timeout-seconds = 30
+
+# 逻辑服。id 只能是 [a-z0-9_-]+。
+# type = internal：切到 velocity.toml 里已注册的后端。
+# type = transfer：向客户端发送 Transfer 包，玩家离开当前代理。
+
+[servers.lobby]
+display = "大厅"
+type = "internal"
+target = "lobby"
+permission = "serveroute.server.lobby"
+
+[servers.survival]
+display = "生存"
+type = "internal"
+target = "survival"
+permission = "serveroute.server.survival"
+
+[servers.skyblock]
+display = "空岛"
+type = "transfer"
+host = "skyblock.example.com"
+port = 25565
+domain = "skyblock.example.com"
+permission = "serveroute.server.skyblock"
+# 可选，覆盖全局 min-protocol
+# min-protocol = 766
+# hidden = true 时不出现在列表和补全，但仍可用命令+权限进入
+
+[lines]
+# 找不到当前线路时，列表里不强制标记。
+
+[lines.nodes.sg]
+display = "新加坡"
+host = "sg.example.com"
+port = 25565
+domain = "sg.example.com"
+permission = "serveroute.line.sg"
+
+[lines.nodes.jp]
+display = "日本"
+host = "jp.example.com"
+port = 25565
+domain = "jp.example.com"
+permission = "serveroute.line.jp"
+
+[lines.nodes.us]
+display = "美国"
+host = "us.example.com"
+port = 25565
+domain = "us.example.com"
+permission = "serveroute.line.us"
