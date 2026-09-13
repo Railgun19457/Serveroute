@@ -15,6 +15,7 @@ Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接�
 - 按入站域名识别当前线路，并可把首次连接分流到对应内部服
 - Transfer 目标按配置域名发出，不在代理侧解析成 IP
 - 配置端口为 `25565` 时查询 `_minecraft._tcp` SRV，避免漏掉非默认端口
+- 可选：发 Transfer 前移除客户端身上的服务端资源包，规避带强制资源包时切换卡死
 - MiniMessage 文案，独立 `message.toml`
 - `/serveroute reload` 热重载；配置损坏时保留内存中的旧配置
 
@@ -70,7 +71,7 @@ accepts-transfers = true
 
 - `[meta]`：配置版本
 - `[command]`：是否接管原版 `/server`，以及 `/line` 别名
-- `[transfer]`：Transfer 最低协议号、切线后送回原子服的超时
+- `[transfer]`：Transfer 最低协议号、切线后送回原子服的超时、切换前是否移除资源包
 - `[servers.<id>]`：逻辑服
   - `type = "internal"`：切到 `velocity.toml` 里的 `target`
   - `type = "transfer"`：向客户端发送 Transfer 包，玩家离开当前代理
@@ -80,14 +81,48 @@ accepts-transfers = true
 
 ## 注意事项
 
-- Transfer 需要 Minecraft 1.20.5 或更高版本- 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
+- Transfer 需要 Minecraft 1.20.5 或更高版本
+- 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
   - Velocity：`[advanced] accepts-transfers = true`
   - Paper / 原版：`server.properties` 里 `accepts-transfers=true`
 - 配置端口为 `25565` 时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
 - 识别线路依赖连接时的域名，不依赖玩家 IP
 - v1 不做测速、GUI、跨代理 Redis 同步
 
+### 从带资源包的后端切换会卡住
+
+从**强制加载服务端资源包**的后端向外部 Transfer（跨群组切换）时，客户端可能停在
+configuration 阶段直到超时。典型现象：
+
+- 切换没有完成，玩家最终掉线，日志出现 `read timed out`
+- 切换后 `/server` / `/line` 不再显示补全（客户端没进 PLAY 阶段，收不到命令树）
+- **先切回本代理的无包后端再切出去就正常**（同代理切换不会重连，且包会被清掉）
+
+这是 Velocity 上游问题（[PaperMC/Velocity#1139](https://github.com/PaperMC/Velocity/issues/1139)），
+不是本插件的路由逻辑。开启下列选项可在发 Transfer 前主动移除客户端的服务端资源包：
+
+```toml
+[transfer]
+clear-pack-before-transfer = true
+```
+
+- 走 adventure 的 `Audience#clearResourcePacks()`，Velocity 已原生实现，发出「移除全部资源包」包
+- 需要 1.20.3+ 客户端；Transfer 本身要求 1.20.5+，所以实际不会出现版本缺口
+- 客户端身上没有服务端资源包时不会发包，也不会有额外日志
+- `/server` 与 `/line` 两条路径都会生效
+
+除本选项外，还有两种规避方式：把跨群组改成单代理多入口（`/line` 那套思路，客户端不重连），
+或去掉后端的 `require-resource-pack`。
+
 ## 升级说明
+
+### 0.1.3-beta
+
+新增 `transfer.clear-pack-before-transfer`，默认 `false`。用于规避从带强制资源包的后端
+向外部 Transfer 时卡住的问题，详见上文「从带资源包的后端切换会卡住」。
+
+这是 beta：改动只影响 Transfer 前的一个可选动作，默认不改变现有行为，
+但「清包能否解决卡住」尚待实机确认。
 
 ### 0.1.2
 

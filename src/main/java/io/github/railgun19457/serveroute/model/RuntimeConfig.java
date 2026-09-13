@@ -17,6 +17,7 @@ public record RuntimeConfig(
         List<String> lineAliases,
         int minProtocol,
         int reconnectTimeoutSeconds,
+        boolean clearPackBeforeTransfer,
         List<ServerEntry> servers,
         List<LineEntry> lines
 ) {

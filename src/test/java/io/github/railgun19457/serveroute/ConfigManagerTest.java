@@ -31,6 +31,7 @@ class ConfigManagerTest {
                 [transfer]
                 min-protocol = 766
                 reconnect-timeout-seconds = 30
+                clear-pack-before-transfer = true
 
                 [servers.lobby]
                 display = "大厅"
@@ -75,6 +76,7 @@ class ConfigManagerTest {
         assertEquals(2, runtime.servers().size());
         assertEquals(ServerType.INTERNAL, runtime.findServer("大厅").orElseThrow().type());
         assertEquals("skyblock.example.com", runtime.findServer("skyblock").orElseThrow().host());
+        assertTrue(runtime.clearPackBeforeTransfer());
         assertEquals(1, runtime.lines().size());
         assertTrue(runtime.findLine("日本").isPresent());
         assertTrue(runtime.findLine("clash").isEmpty());

@@ -96,6 +96,7 @@ public final class LineSwitcher {
         )));
         logger.info("[Serveroute][line] Transfer. uuid={} id={} host={}:{}",
                 player.getUniqueId(), entry.id(), address.getHostString(), address.getPort());
+        ResourcePackCleaner.clearBeforeTransfer(player, runtime.clearPackBeforeTransfer(), logger);
         player.transferToHost(address);
     }
 

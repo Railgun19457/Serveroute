@@ -148,6 +148,7 @@ public final class ServerRouter {
         player.sendMessage(messages.renderPrefixed(templates.serverConnecting(), Map.of(
                 "display", MessageService.escape(entry.display())
         )));
+        ResourcePackCleaner.clearBeforeTransfer(player, runtime.clearPackBeforeTransfer(), logger);
         logger.info("[Serveroute][server] Transfer. uuid={} id={} host={}:{}",
                 player.getUniqueId(), entry.id(), address.getHostString(), address.getPort());
         player.transferToHost(address);

@@ -17,6 +17,9 @@ min-protocol = 766
 reconnect-timeout-seconds = 30
 # Transfer 必须带端口。配置为 25565 时会查询 _minecraft._tcp SRV 再发出。
 # 对端也必须开启 Transfer 接收（Velocity: accepts-transfers = true）。
+# 发 Transfer 前移除客户端身上的服务端资源包（需要 1.20.3+ 客户端）。
+# 从带强制资源包的后端 Transfer 会卡住（Velocity #1139），开启可规避。
+clear-pack-before-transfer = false
 
 # 逻辑服。id 只能是 [a-z0-9_-]+。
 # type = internal：切到 velocity.toml 里已注册的后端。

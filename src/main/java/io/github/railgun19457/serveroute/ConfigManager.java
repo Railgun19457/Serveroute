@@ -101,6 +101,7 @@ public final class ConfigManager {
         List<String> aliases = stringList(toml.getArray("command.line-aliases"), List.of("线路", "node"));
         int minProtocol = intValue(toml, "transfer.min-protocol", 766);
         int reconnectTimeout = Math.max(1, intValue(toml, "transfer.reconnect-timeout-seconds", 30));
+        boolean clearPackBeforeTransfer = boolValue(toml, "transfer.clear-pack-before-transfer", false);
 
         Set<String> claimedHosts = new HashSet<>();
         List<ServerEntry> servers = parseServers(toml.getTable("servers"), claimedHosts);
@@ -112,6 +113,7 @@ public final class ConfigManager {
                 aliases,
                 minProtocol,
                 reconnectTimeout,
+                clearPackBeforeTransfer,
                 servers,
                 lines
         );
