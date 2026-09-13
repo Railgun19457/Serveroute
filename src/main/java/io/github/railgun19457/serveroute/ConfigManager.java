@@ -156,7 +156,7 @@ public final class ConfigManager {
 
             String target = blankToNull(stringValue(table, "target", null));
             String host = blankToNull(stringValue(table, "host", null));
-            String domain = blankToNull(stringValue(table, "domain", null));
+            warnLegacyDomain(table, "server", id);
             Integer port = optionalPort(table, "port");
             String permission = blankToNull(stringValue(table, "permission", null));
             Integer minProtocol = optionalInt(table, "min-protocol");
@@ -172,8 +172,8 @@ public final class ConfigManager {
                     continue;
                 }
             } else {
-                if (domain == null && host == null) {
-                    logger.error("[Serveroute][config] Skipping server '{}': transfer entries require domain or host", id);
+                if (host == null) {
+                    logger.error("[Serveroute][config] Skipping server '{}': transfer entries require host", id);
                     continue;
                 }
                 if (port == null) {
@@ -182,11 +182,11 @@ public final class ConfigManager {
                 }
             }
 
-            if (!claimHosts(claimedHosts, id, "server", domain, host)) {
+            if (!claimHost(claimedHosts, id, "server", host)) {
                 continue;
             }
 
-            servers.add(new ServerEntry(id, display, type, target, host, domain, port == null ? 0 : port, permission, minProtocol, hidden));
+            servers.add(new ServerEntry(id, display, type, target, host, port == null ? 0 : port, permission, minProtocol, hidden));
         }
         return servers;
     }
@@ -226,44 +226,42 @@ public final class ConfigManager {
             }
 
             String host = blankToNull(stringValue(table, "host", null));
-            String domain = blankToNull(stringValue(table, "domain", null));
+            warnLegacyDomain(table, "line", id);
             Integer port = optionalPort(table, "port");
             String permission = blankToNull(stringValue(table, "permission", null));
             Integer minProtocol = optionalInt(table, "min-protocol");
 
-            if (domain == null && host == null) {
-                logger.error("[Serveroute][config] Skipping line '{}': require domain or host", id);
+            if (host == null) {
+                logger.error("[Serveroute][config] Skipping line '{}': require host", id);
                 continue;
             }
             if (port == null) {
                 logger.error("[Serveroute][config] Skipping line '{}': require port 1-65535", id);
                 continue;
             }
-            if (!claimHosts(claimedHosts, id, "line", domain, host)) {
+            if (!claimHost(claimedHosts, id, "line", host)) {
                 continue;
             }
-            lines.add(new LineEntry(id, display, host, domain, port, permission, minProtocol));
+            lines.add(new LineEntry(id, display, host, port, permission, minProtocol));
         }
         return lines;
     }
 
-    private boolean claimHosts(Set<String> claimedHosts, String id, String kind, String domain, String host) {
-        List<String> candidates = new ArrayList<>();
-        addNormalizedHost(candidates, domain);
-        addNormalizedHost(candidates, host);
-        for (String candidate : candidates) {
-            if (!claimedHosts.add(candidate)) {
-                logger.warn("[Serveroute][config] Skipping {} '{}': host '{}' already claimed", kind, id, candidate);
-                return false;
-            }
+    private boolean claimHost(Set<String> claimedHosts, String id, String kind, String host) {
+        String normalized = HostMatcher.normalize(host);
+        if (normalized.isEmpty()) {
+            return true;
+        }
+        if (!claimedHosts.add(normalized)) {
+            logger.warn("[Serveroute][config] Skipping {} '{}': host '{}' already claimed", kind, id, normalized);
+            return false;
         }
         return true;
     }
 
-    private void addNormalizedHost(List<String> output, String value) {
-        String normalized = HostMatcher.normalize(value);
-        if (!normalized.isEmpty() && !output.contains(normalized)) {
-            output.add(normalized);
+    private void warnLegacyDomain(TomlTable table, String kind, String id) {
+        if (blankToNull(stringValue(table, "domain", null)) != null) {
+            logger.warn("[Serveroute][config] {} '{}' still sets 'domain'; it was merged into 'host' and is ignored", kind, id);
         }
     }
 

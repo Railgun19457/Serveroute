@@ -6,16 +6,9 @@ public record ServerEntry(
         ServerType type,
         String target,
         String host,
-        String domain,
         int port,
         String permission,
         Integer minProtocol,
         boolean hidden
 ) {
-    public String emitHost() {
-        if (domain != null && !domain.isBlank()) {
-            return domain;
-        }
-        return host;
-    }
 }

@@ -55,7 +55,7 @@ public record RuntimeConfig(
             if (entry.type() != ServerType.INTERNAL) {
                 continue;
             }
-            if (HostMatcher.matches(normalizedHost, entry.domain(), entry.host())) {
+            if (HostMatcher.matches(normalizedHost, entry.host())) {
                 return Optional.of(entry);
             }
         }
@@ -68,7 +68,7 @@ public record RuntimeConfig(
             return Optional.empty();
         }
         for (LineEntry entry : lines) {
-            if (HostMatcher.matches(normalizedHost, entry.domain(), entry.host())) {
+            if (HostMatcher.matches(normalizedHost, entry.host())) {
                 return Optional.of(entry);
             }
         }

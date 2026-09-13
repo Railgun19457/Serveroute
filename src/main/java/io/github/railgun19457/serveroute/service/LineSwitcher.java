@@ -89,7 +89,7 @@ public final class LineSwitcher {
                 TimeUnit.SECONDS.toMillis(runtime.reconnectTimeoutSeconds())
         ));
 
-        String emitHost = entry.emitHost();
+        String emitHost = entry.host();
         InetSocketAddress address = TransferAddresses.forTransfer(emitHost, entry.port());
         player.sendMessage(messages.renderPrefixed(templates.lineSwitching(), Map.of(
                 "display", MessageService.escape(entry.display())

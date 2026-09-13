@@ -52,13 +52,9 @@ public final class HostMatcher {
         return Optional.empty();
     }
 
-    public static boolean matches(String normalizedHost, String domain, String host) {
+    public static boolean matches(String normalizedHost, String host) {
         if (normalizedHost == null || normalizedHost.isEmpty()) {
             return false;
-        }
-        String normalizedDomain = normalize(domain);
-        if (!normalizedDomain.isEmpty() && normalizedDomain.equals(normalizedHost)) {
-            return true;
         }
         String normalizedEntryHost = normalize(host);
         return !normalizedEntryHost.isEmpty() && normalizedEntryHost.equals(normalizedHost);

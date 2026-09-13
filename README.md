@@ -2,7 +2,7 @@
 
 ![:Serveroute](https://count.getloli.com/@railgun19457_Serveroute?name=railgun19457_Serveroute&theme=minecraft&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
 
-Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接管 `/server`，并提供 `/line` 切换同一代理的公网入口。玩家只面对配置里的名字，不能填写任意地址。
+Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接管 `/server`，并提供 `/line` 切换同一代理的公网入口。
 
 `/server` 决定去哪玩；`/line` 决定从哪进。
 
@@ -53,14 +53,16 @@ accepts-transfers = true
 
 ## 权限
 
-- `serveroute.command.server`：使用 `/server`
-- `velocity.command.server`：兼容原版权限，也可使用 `/server`
-- `serveroute.command.line`：使用 `/line`
-- `serveroute.admin.reload`：重载配置；控制台默认可用
+- `serveroute.command.server`：使用 `/server`（不设即为允许，显式 `false` 才拒绝）
+- `velocity.command.server`：兼容原版权限，显式 `true` 时直接放行
+- `serveroute.command.line`：使用 `/line`（不设即为允许，显式 `false` 才拒绝）
+- `serveroute.admin.reload`：重载配置；控制台默认可用，玩家必须显式授予
 - `serveroute.server.<id>`：进入指定逻辑服（仅当配置写了 `permission` 时生效）
 - `serveroute.line.<id>`：使用指定线路（仅当配置写了 `permission` 时生效）
 
-未写 `permission` 的条目：只要有对应命令权限即可使用。`hidden = true` 的条目不出现在列表和补全中，但仍可用命令进入。
+命令级权限与原版 Velocity 一致：没有权限插件或未设置节点时视为允许，只有显式设为 `false` 才拒绝。
+条目级 `permission` 相反，必须显式授予，未设置视为不允许。未写 `permission` 的条目只需命令权限即可使用。
+`hidden = true` 的条目不出现在列表和补全中，但仍可用命令进入。
 
 ## 配置概览
 
@@ -78,14 +80,22 @@ accepts-transfers = true
 
 ## 注意事项
 
-- 玩家不能输入裸 `host:port`，Transfer 目标只能来自配置白名单
-- Transfer 需要 Minecraft 1.20.5 或更高版本
-- 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
+- Transfer 需要 Minecraft 1.20.5 或更高版本- 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
   - Velocity：`[advanced] accepts-transfers = true`
   - Paper / 原版：`server.properties` 里 `accepts-transfers=true`
 - 配置端口为 `25565` 时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
 - 识别线路依赖连接时的域名，不依赖玩家 IP
 - v1 不做测速、GUI、跨代理 Redis 同步
+
+## 升级说明
+
+### 0.1.2
+
+`domain` 字段已合并进 `host`，两者语义本来就相同（都是入站匹配 + Transfer 发出目标）
+
+- 原先只写 `host`：无需改动
+- 原先 `host` 与 `domain` 都写：删掉 `domain` 即可，旧字段只会打一条 warn
+- 原先**只写 `domain`**：必须改名为 `host`，否则该条目会被跳过
 
 ## 本地构建
 

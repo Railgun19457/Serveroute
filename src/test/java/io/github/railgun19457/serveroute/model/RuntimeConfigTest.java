@@ -17,8 +17,8 @@ class RuntimeConfigTest {
                 List.of("线路"),
                 766,
                 30,
-                List.of(new ServerEntry("lobby", "大厅", ServerType.INTERNAL, "lobby", null, null, 0, null, null, false)),
-                List.of(new LineEntry("jp", "日本", "jp.example.com", "jp.example.com", 25565, null, null))
+                List.of(new ServerEntry("lobby", "大厅", ServerType.INTERNAL, "lobby", null, 0, null, null, false)),
+                List.of(new LineEntry("jp", "日本", "jp.example.com", 25565, null, null))
         );
 
         assertEquals("lobby", runtime.findServer("大厅").orElseThrow().id());
@@ -38,7 +38,7 @@ class RuntimeConfigTest {
                 List.of(),
                 766,
                 30,
-                List.of(new ServerEntry("hidden", "隐藏", ServerType.INTERNAL, "hidden", null, null, 0, null, null, true)),
+                List.of(new ServerEntry("hidden", "隐藏", ServerType.INTERNAL, "hidden", null, 0, null, null, true)),
                 List.of()
         );
         assertTrue(runtime.suggestServers("h", entry -> true).isEmpty());

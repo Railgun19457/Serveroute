@@ -25,10 +25,11 @@ class HostMatcherTest {
     }
 
     @Test
-    void matchesDomainBeforeHost() {
-        assertTrue(HostMatcher.matches("sg.example.com", "sg.example.com", "ignored.example.com"));
-        assertTrue(HostMatcher.matches("sg.example.com", null, "sg.example.com:25565"));
-        assertFalse(HostMatcher.matches("us.example.com", "sg.example.com", "sg.example.com"));
+    void matchesNormalizedHost() {
+        assertTrue(HostMatcher.matches("sg.example.com", "sg.example.com"));
+        assertTrue(HostMatcher.matches("sg.example.com", "sg.example.com:25565"));
+        assertFalse(HostMatcher.matches("us.example.com", "sg.example.com"));
+        assertFalse(HostMatcher.matches("sg.example.com", null));
     }
 
     @Test

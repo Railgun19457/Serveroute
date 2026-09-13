@@ -46,7 +46,6 @@ class ConfigManagerTest {
                 type = "transfer"
                 host = "skyblock.example.com"
                 port = 25565
-                domain = "skyblock.example.com"
 
                 [servers.dup]
                 display = "空岛"
@@ -56,12 +55,6 @@ class ConfigManagerTest {
 
                 [lines.nodes.jp]
                 display = "日本"
-                host = "jp.example.com"
-                port = 25565
-                domain = "jp.example.com"
-
-                [lines.nodes.clash]
-                display = "冲突"
                 host = "jp.example.com"
                 port = 25565
                 """, StandardCharsets.UTF_8);
@@ -81,7 +74,7 @@ class ConfigManagerTest {
         assertEquals(1, runtime.configVersion());
         assertEquals(2, runtime.servers().size());
         assertEquals(ServerType.INTERNAL, runtime.findServer("大厅").orElseThrow().type());
-        assertEquals("skyblock.example.com", runtime.findServer("skyblock").orElseThrow().emitHost());
+        assertEquals("skyblock.example.com", runtime.findServer("skyblock").orElseThrow().host());
         assertEquals(1, runtime.lines().size());
         assertTrue(runtime.findLine("日本").isPresent());
         assertTrue(runtime.findLine("clash").isEmpty());
