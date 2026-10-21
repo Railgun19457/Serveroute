@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 import java.util.Hashtable;
 
 public final class TransferAddresses {
-    private static final int DEFAULT_MINECRAFT_PORT = 25565;
+    public static final int DEFAULT_MINECRAFT_PORT = 25565;
 
     private TransferAddresses() {
     }

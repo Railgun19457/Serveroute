@@ -6,6 +6,7 @@ import io.github.railgun19457.serveroute.model.RuntimeConfig;
 import io.github.railgun19457.serveroute.model.ServerEntry;
 import io.github.railgun19457.serveroute.model.ServerType;
 import io.github.railgun19457.serveroute.service.HostMatcher;
+import io.github.railgun19457.serveroute.service.TransferAddresses;
 import org.slf4j.Logger;
 import org.tomlj.Toml;
 import org.tomlj.TomlArray;
@@ -179,8 +180,11 @@ public final class ConfigManager {
                     continue;
                 }
                 if (port == null) {
-                    logger.error("[Serveroute][config] Skipping server '{}': transfer entries require port", id);
-                    continue;
+                    if (table.contains("port")) {
+                        logger.error("[Serveroute][config] Skipping server '{}': port must be 1-65535", id);
+                        continue;
+                    }
+                    port = TransferAddresses.DEFAULT_MINECRAFT_PORT;
                 }
             }
 
@@ -238,8 +242,11 @@ public final class ConfigManager {
                 continue;
             }
             if (port == null) {
-                logger.error("[Serveroute][config] Skipping line '{}': require port 1-65535", id);
-                continue;
+                if (table.contains("port")) {
+                    logger.error("[Serveroute][config] Skipping line '{}': port must be 1-65535", id);
+                    continue;
+                }
+                port = TransferAddresses.DEFAULT_MINECRAFT_PORT;
             }
             if (!claimHost(claimedHosts, id, "line", host)) {
                 continue;

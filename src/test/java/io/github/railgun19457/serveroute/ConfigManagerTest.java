@@ -83,6 +83,39 @@ class ConfigManagerTest {
     }
 
     @Test
+    void defaultsMissingPortTo25565() throws Exception {
+        Files.writeString(dataDirectory.resolve("config.toml"), """
+                [servers.skyblock]
+                display = "空岛"
+                type = "transfer"
+                host = "skyblock.example.com"
+
+                [servers.broken]
+                display = "坏"
+                type = "transfer"
+                host = "broken.example.com"
+                port = 0
+
+                [lines.nodes.jp]
+                display = "日本"
+                host = "jp.example.com"
+                """, StandardCharsets.UTF_8);
+        Files.writeString(dataDirectory.resolve("message.toml"), "prefix = \"ok\"\n", StandardCharsets.UTF_8);
+
+        ConfigManager manager = new ConfigManager(
+                LoggerFactory.getLogger("test"),
+                dataDirectory,
+                name -> true
+        );
+        manager.initialize();
+
+        RuntimeConfig runtime = manager.runtime();
+        assertEquals(25565, runtime.findServer("skyblock").orElseThrow().port());
+        assertEquals(25565, runtime.findLine("jp").orElseThrow().port());
+        assertTrue(runtime.findServer("broken").isEmpty());
+    }
+
+    @Test
     void reloadKeepsOldConfigOnParseFailure() throws Exception {
         Files.writeString(dataDirectory.resolve("config.toml"), """
                 [meta]

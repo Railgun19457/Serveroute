@@ -14,7 +14,7 @@ Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接�
 - 命令参数同时接受配置 `id` 与展示名 `display`
 - 按入站域名识别当前线路，并可把首次连接分流到对应内部服
 - Transfer 目标按配置域名发出，不在代理侧解析成 IP
-- 配置端口为 `25565` 时查询 `_minecraft._tcp` SRV，避免漏掉非默认端口
+- 配置端口为 `25565` 或省略端口时查询 `_minecraft._tcp` SRV，避免漏掉非默认端口
 - 可选：发 Transfer 前移除客户端身上的服务端资源包，规避带强制资源包时切换卡死
 - MiniMessage 文案，独立 `message.toml`
 - `/serveroute reload` 热重载；配置损坏时保留内存中的旧配置
@@ -75,7 +75,8 @@ accepts-transfers = true
 - `[servers.<id>]`：逻辑服
   - `type = "internal"`：切到 `velocity.toml` 里的 `target`
   - `type = "transfer"`：向客户端发送 Transfer 包，玩家离开当前代理
-- `[lines.nodes.<id>]`：同一代理的公网入口，永远走 Transfer
+  - `port` 可选，省略时为 `25565`
+- `[lines.nodes.<id>]`：同一代理的公网入口，永远走 Transfer，`port` 可选
 
 `message.toml` 用于自定义插件提示文本，支持 MiniMessage。
 
@@ -85,7 +86,7 @@ accepts-transfers = true
 - 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
   - Velocity：`[advanced] accepts-transfers = true`
   - Paper / 原版：`server.properties` 里 `accepts-transfers=true`
-- 配置端口为 `25565` 时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
+- 配置端口为 `25565` 或省略 `port`（缺省即 `25565`）时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
 - 识别线路依赖连接时的域名，不依赖玩家 IP
 - v1 不做测速、GUI、跨代理 Redis 同步
 
@@ -115,6 +116,15 @@ clear-pack-before-transfer = true
 或去掉后端的 `require-resource-pack`。
 
 ## 升级说明
+
+### 0.1.4-beta
+
+`port` 改为可选：`type = "transfer"` 的逻辑服和线路只写 `host` 时按 `25565` 发出，
+并照旧查询 `_minecraft._tcp` SRV。
+
+- 显式写了 `port` 的配置无需改动
+- 端口仍会校验，`0`、`70000` 等非法值依然会跳过该条目
+- Transfer 包本身始终带端口，省略只是配置层默认值
 
 ### 0.1.3-beta
 

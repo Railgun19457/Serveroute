@@ -15,7 +15,8 @@ line-aliases = ["线路", "node"]
 min-protocol = 766
 # 切线路后等待重连送回原子服的超时（秒）。超时丢弃记录，走正常初始服逻辑。
 reconnect-timeout-seconds = 30
-# Transfer 必须带端口。配置为 25565 时会查询 _minecraft._tcp SRV 再发出。
+# Transfer 包本身必须带端口；配置省略 port 时按 25565 发出。
+# 端口为 25565（显式或省略）时会查询 _minecraft._tcp SRV 再发出。
 # 对端也必须开启 Transfer 接收（Velocity: accepts-transfers = true）。
 # 发 Transfer 前移除客户端身上的服务端资源包（需要 1.20.3+ 客户端）。
 # 从带强制资源包的后端 Transfer 会卡住（Velocity #1139），开启可规避。
@@ -42,6 +43,7 @@ permission = "serveroute.server.survival"
 display = "空岛"
 type = "transfer"
 host = "skyblock.example.com"
+# port 可选，省略时为 25565
 port = 25565
 permission = "serveroute.server.skyblock"
 # 可选，覆盖全局 min-protocol
@@ -50,6 +52,7 @@ permission = "serveroute.server.skyblock"
 
 [lines]
 # 找不到当前线路时，列表里不强制标记。
+# 每条线路的 port 可选，省略时为 25565。
 
 [lines.nodes.sg]
 display = "新加坡"
