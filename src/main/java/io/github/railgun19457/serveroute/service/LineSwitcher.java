@@ -90,7 +90,7 @@ public final class LineSwitcher {
         ));
 
         String emitHost = entry.host();
-        InetSocketAddress address = TransferAddresses.forTransfer(emitHost, entry.port());
+        InetSocketAddress address = TransferAddresses.unresolved(emitHost, entry.port());
         player.sendMessage(messages.renderPrefixed(templates.lineSwitching(), Map.of(
                 "display", MessageService.escape(entry.display())
         )));

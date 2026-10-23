@@ -14,7 +14,7 @@ Serveroute 是一个运行在 Velocity 上的路由插件，用一份配置接�
 - 命令参数同时接受配置 `id` 与展示名 `display`
 - 按入站域名识别当前线路，并可把首次连接分流到对应内部服
 - Transfer 目标按配置域名发出，不在代理侧解析成 IP
-- 配置端口为 `25565` 或省略端口时查询 `_minecraft._tcp` SRV，避免漏掉非默认端口
+- 不在代理侧做 DNS：Transfer 目标按配置域名与端口原样发出，SRV 交给客户端按原版逻辑查询
 - 可选：发 Transfer 前移除客户端身上的服务端资源包，规避带强制资源包时切换卡死
 - MiniMessage 文案，独立 `message.toml`
 - `/serveroute reload` 热重载；配置损坏时保留内存中的旧配置
@@ -86,7 +86,11 @@ accepts-transfers = true
 - 对端必须开启 Transfer 接收，否则客户端会提示「此服务器不接受转移」或直接断线
   - Velocity：`[advanced] accepts-transfers = true`
   - Paper / 原版：`server.properties` 里 `accepts-transfers=true`
-- 配置端口为 `25565` 或省略 `port`（缺省即 `25565`）时会查询 `_minecraft._tcp` SRV；其它端口按配置直发
+- 插件不在代理侧做任何 DNS 查询：域名与端口按配置原样发给客户端
+- 端口为 `25565`（显式或省略）时，原版客户端会自己查询 `_minecraft._tcp` SRV，并按 SRV **目标**连接；
+  此时对端在握手里看到的域名是 SRV 目标，不是配置里写的域名
+- 目标域名**只有 SRV 记录、没有 A 记录**时，端口必须保持 `25565`，否则客户端报 unknown host
+  （插件把 SRV 的端口直接发出去并不会帮忙，客户端只在端口为 25565 时查 SRV）
 - 识别线路依赖连接时的域名，不依赖玩家 IP
 - v1 不做测速、GUI、跨代理 Redis 同步
 
@@ -116,6 +120,16 @@ clear-pack-before-transfer = true
 或去掉后端的 `require-resource-pack`。
 
 ## 升级说明
+
+### 0.1.5-beta
+
+修复「只有 SRV 记录、没有 A 记录」的域名转移时报 unknown host：移除代理侧的 `_minecraft._tcp`
+SRV 查询，域名与端口按配置原样发出。
+
+- 原行为只取 SRV 的端口、丢掉 SRV 的目标域名，于是发出 `域名:非默认端口`；客户端因端口非 `25565`
+  不再自己查 SRV，又解析不到该域名的 A 记录，直接未知主机
+- 现在端口为 `25565`（显式或省略）时由客户端按原版逻辑查 SRV，与玩家直接输入域名连接完全一致
+- 显式写了非 `25565` 端口的配置需要确认该域名有 A 记录，否则客户端无法解析
 
 ### 0.1.4-beta
 

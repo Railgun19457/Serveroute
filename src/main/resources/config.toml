@@ -16,7 +16,8 @@ min-protocol = 766
 # 切线路后等待重连送回原子服的超时（秒）。超时丢弃记录，走正常初始服逻辑。
 reconnect-timeout-seconds = 30
 # Transfer 包本身必须带端口；配置省略 port 时按 25565 发出。
-# 端口为 25565（显式或省略）时会查询 _minecraft._tcp SRV 再发出。
+# 插件不在代理侧做 DNS：端口为 25565（显式或省略）时由客户端按原版逻辑查询 SRV。
+# 所以只有 SRV 记录、没有 A 记录的域名，端口必须写 25565，否则客户端报 unknown host。
 # 对端也必须开启 Transfer 接收（Velocity: accepts-transfers = true）。
 # 发 Transfer 前移除客户端身上的服务端资源包（需要 1.20.3+ 客户端）。
 # 从带强制资源包的后端 Transfer 会卡住（Velocity #1139），开启可规避。

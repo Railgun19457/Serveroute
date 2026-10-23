@@ -144,7 +144,7 @@ public final class ServerRouter {
         }
 
         String emitHost = entry.host();
-        InetSocketAddress address = TransferAddresses.forTransfer(emitHost, entry.port());
+        InetSocketAddress address = TransferAddresses.unresolved(emitHost, entry.port());
         player.sendMessage(messages.renderPrefixed(templates.serverConnecting(), Map.of(
                 "display", MessageService.escape(entry.display())
         )));
